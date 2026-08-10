@@ -3,7 +3,7 @@
  another checks if two strings are anagrams (sort char arrays or use a frequency dictionary). 
  Bonus: overload one function using named/optional parameters to toggle case sensitivity.*/
 
-class Program
+class Anagram
 {
     
  public static bool checkPalindrome( string input)

@@ -53,7 +53,7 @@ static void Main(){
         {
             foreach(var pair in count)
                 {
-                    if ((int)freq[i] == pair.Value)
+                    if ((int)freq[i] == pair.Value )
                     {
                         if(!result.Contains(pair.Key))
                         result.Add(pair.Key);

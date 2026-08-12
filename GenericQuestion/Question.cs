@@ -59,7 +59,7 @@ public class Sorting
 
     }
 }
-public class Program
+public class Question
 {
     
    public static void Main(string[] args)

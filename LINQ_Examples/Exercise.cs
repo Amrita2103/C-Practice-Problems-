@@ -339,12 +339,98 @@ var query21 =  from c in customers
         {
             System.Console.WriteLine(q);
         }
+        System.Console.WriteLine("\n");
 // 22. Write a left outer join between customers and orders so that 
 // customers with no orders still appear (with "No Orders" shown).
+var query22 = from c in customers // outer loop starts 
+              join o in orders on c.Id equals o.CustomerId into custOrders
+              from o in custOrders.DefaultIfEmpty()
+              select new
+              {
+                  c.Name,
+                  Product = o?.Product ?? "No orders"
+              };
+foreach( var item in query22)
+        {
+            System.Console.WriteLine(item);
+        }
+// 23. Write a group join between customers and orders showing each customer 
+// with their full list of orders (as a nested collection).
+System.Console.WriteLine("\n");
+var query23= from c in customers
+             join o in orders on c.Id equals o.CustomerId into custOrders
+             select new {Name = c.Name, Orders = custOrders};
+foreach(var item in query23)
+        {
+            System.Console.Write(item.Name+" ");
+            foreach(var q in item.Orders)
+            {
+                  System.Console.Write(q.Product+" ");
+            }
+           System.Console.WriteLine();
+        }
+        System.Console.WriteLine("\n");
+// 24. Write a cross join between two small arrays: string[] sizes = {"S","M","L"} 
+// and string[] colors = {"Red","Blue"} — produce every size-color combination.
+string[] sizes = new string[]{"S","M","L"};
+string[] colors = new string[]{"Red","Blue"};
+var query24 = from size in sizes
+              from color in colors 
+              select new {color,size};
+foreach(var q in query24)
+        {
+            System.Console.WriteLine(q);
+        }
+System.Console.WriteLine("\n");
+// 25. Join employees and departments on department name to show only employees whose department 
+// exists in the departments list (this also demonstrates an inner join filters out unmatched rows
+//  — try it with Department = "Finance" employees, of which there are none, to see the effect).
 
+var query25= from e in employees
+             join d in departments 
+             on e.Department equals d.Name
+             select new {Name = e.Name, Department=d.Name};
+
+foreach(var q in query25)
+        {
+            System.Console.WriteLine(q);
+        }
+         
+//SET Operators
+// 26. Given int[] a = {1,2,3,4,5} and int[] b = {4,5,6,7}, compute Union, Intersect, and Except.
+int[] a = {1,2,3,4,5};
+int[] b={4,5,6,7};
+
+var union = a.Union(b);
+var Intersect = a.Intersect(b);
+var Except = a.Except(b);
+System.Console.WriteLine("Union: ");
+foreach(var u in union)
+        {
+            System.Console.Write(u+" ");
+        }
+System.Console.WriteLine("\nIntersection: ");
+foreach(var i in Intersect)
+        {
+            System.Console.Write(i+" ");
+        }
+System.Console.WriteLine("\nExcept: ");
+foreach(var e in Except)
+        {
+            System.Console.Write(e+" ");
+        }
+// 27. Remove duplicate Category values from products using Distinct.
+System.Console.WriteLine("\nThe distinct products are: ");
+var query27 = products.Distinct();
+foreach(var p in query27)
+        {
+            System.Console.WriteLine(p.Name);
+        }
+// Element Operators 
+// 28. Find the first employee named "Isha" using FirstOrDefault — 
+// and show what happens if you search for a name that doesn't exist.
 
 
     }
-
 }
 

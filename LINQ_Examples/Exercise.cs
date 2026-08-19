@@ -1,4 +1,13 @@
-﻿public class Employees
+﻿
+
+
+
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.Marshalling;
+using Microsoft.VisualBasic;
+
+public class Employees
 {
     public int Id { get; set; }
     public string Name { get; set; }
@@ -8,12 +17,12 @@
     public int Age { get; set; }
     public DateTime HireDate { get; set; }
 }
+
 public class Department
 {
     public int Id { get; set; }
     public string Name { get; set; }
 }
-
 public class Product
 {
     public int Id { get; set; }
@@ -28,7 +37,6 @@ public class Customer
     public int Id { get; set; }
     public string Name { get; set; }
 }
-
 public class Order
 {
     public int Id { get; set; }
@@ -37,12 +45,13 @@ public class Order
     public decimal Total { get; set; }
     public DateTime OrderDate { get; set; }
 }
-public class Exercise{
-
-
-
-    public static void Main(){
-List<Employees> employees = new()
+public class Exercise
+{
+    
+    public static void Main(string[] args)
+    {
+        
+      List<Employees> employees = new()
 {
     new Employees { Id = 1, Name = "Aarav",  Department = "IT",    Location = "Ahmedabad", Salary = 55000, Age = 28, HireDate = new DateTime(2019, 3, 12) },
     new Employees { Id = 2, Name = "Diya",   Department = "HR",    Location = "Mumbai",    Salary = 42000, Age = 34, HireDate = new DateTime(2016, 7, 1) },
@@ -53,6 +62,7 @@ List<Employees> employees = new()
     new Employees { Id = 7, Name = "Vihaan", Department = "HR",    Location = "Ahmedabad", Salary = 39000, Age = 45, HireDate = new DateTime(2009, 2, 27) },
     new Employees { Id = 8, Name = "Anaya",  Department = "Sales", Location = "Mumbai",    Salary = 51000, Age = 29, HireDate = new DateTime(2020, 6, 30) },
 };
+
 List<Department> departments = new()
 {
     new Department { Id = 1, Name = "IT" },
@@ -60,6 +70,7 @@ List<Department> departments = new()
     new Department { Id = 3, Name = "Sales" },
     new Department { Id = 4, Name = "Finance" }, // no employees — good for left join practice
 };
+
 List<Product> products = new()
 {
     new Product { Id = 1, Name = "Laptop",     Category = "Electronics", Price = 55000, Stock = 8 },
@@ -70,6 +81,7 @@ List<Product> products = new()
     new Product { Id = 6, Name = "Notebook",   Category = "Stationery",  Price = 50,    Stock = 200 },
     new Product { Id = 7, Name = "Pen",        Category = "Stationery",  Price = 10,    Stock = 500 },
 };
+
 List<Customer> customers = new()
 {
     new Customer { Id = 1, Name = "Rahul" },
@@ -83,48 +95,256 @@ List<Order> orders = new()
     new Order { Id = 3, CustomerId = 2, Product = "Desk",    Total = 7000,  OrderDate = new DateTime(2026, 1, 20) },
     new Order { Id = 4, CustomerId = 2, Product = "Monitor", Total = 12000, OrderDate = new DateTime(2026, 3, 1) },
 };
+
 List<int> numbers = new List<int>(){ 4, 8, 15, 16, 23, 42, 7, 11, 19, 30 };
 string[] words = { "apple", "banana", "kiwi", "fig", "grape", "mango" };
 
-//1.  all employees earning > 50000
+//1. Write a query (using query syntax) to select all employees earning more than 50000.
+// query syntax: from --> where--> select--> orderby --> group --> join..on..equals
+//method syntax : source.Where.Select.OrderBy.GroupBy.Join(...)
 
-var query = employees.Where(e=>e.Salary >50000);
-  foreach(var s in query)
+var query1 = from e in employees
+             where e.Salary > 50000
+             select new {e.Name, e.Salary};
+
+foreach( var q in query1)
         {
-            System.Console.WriteLine($"{s.Name} earns salary {s.Salary}");
-        }  
-  // 1.2 in query syntax 
+            System.Console.WriteLine($"{q.Name} earns {q.Salary}");
+        } 
+
 System.Console.WriteLine();
-  var query1 = from e in employees
-               where e.Salary > 50000
-               select e;
- foreach(var s in query1)
-        {
-            System.Console.WriteLine($"{s.Name} earns salary {s.Salary}");
-        }  
-        System.Console.WriteLine();
- // 3. Demonstrate deferred execution: define a query on numbers, 
- // then add a new number to the list, then enumerate the query. 
- // Show that the new number is included.
+// 2. use method syntax 
 
-   var query2 = from n in numbers
-                where n >=30
-                select n;
-    
-    foreach(int n in query2)
+var query2 = employees.Where(e => e.Salary > 50000)
+                      .Select(e => new {e.Name, e.Salary});
+
+foreach(var q in query2)
         {
-            System.Console.Write(n+ " ");
-        }
-        numbers.Add(55);
-        System.Console.WriteLine();
- foreach(int n in query2)
-        {
-            System.Console.Write(n+ " ");
+            System.Console.WriteLine($"{q.Name} earns {q.Salary}");
         }
 
-    // 4. Force immediate execution of a query on employees using .ToList().
-    
+//3. Demonstrate deferred execution: define a query on numbers,
+//  then add a new number to the list, then enumerate the query.
+//  Show that the new number is included.
+System.Console.WriteLine();
+IEnumerable<int> query3 = numbers.Where(n => n >= 30); // we can omit .select in method syntax 
+foreach( int q in query3)
+        {
+            System.Console.Write(q+" ");
+        }
+
+// now adding a number 55 to the list 
+numbers.Add(55);
+System.Console.WriteLine();
+foreach( int q in query3)
+        {
+            System.Console.Write(q+" ");
+        }
+System.Console.WriteLine();
+// 4. Force immediate execution of a query on employees using .ToList()
+List<Employees> query4 = employees.Where(e=>e.Location =="Ahmedabad")
+                                  .Select( e => e)
+                                  .ToList();
+    System.Console.WriteLine("The people living in Ahmedabad are: ");
+    foreach(var obj in query4)
+        {
+            System.Console.Write($"{obj.Name} ");
+        } 
+
+    System.Console.WriteLine();        
+    // 5. Use let to create a query that calculates a 10% bonus for each employee 
+// and filters those whose bonus exceeds 5000.
+
+// let keyword helps us introduce a temporary variable inside a query 
+
+var query5 = from emp in employees
+             let bonus = 0.1m * emp.Salary // explicit casting to decimal also works here : (decimal)
+             where bonus > 5000
+             select new {emp.Name,bonus};
+
+foreach( var e in query5)
+        {
+           System.Console.WriteLine($"{e.Name} earns bonus Rs.{e.bonus}");   
+        }
+  System.Console.WriteLine();
+
+//6. Project employees into an anonymous type with only Name and Department.
+
+var query6 = employees.Select(e => new{e.Name, e.Department});
+foreach( var q in query6)
+        {
+            System.Console.WriteLine($"{q.Name} is in department {q.Department} ");
+        }
+// FILTERING
+// 7. Get all employees from the "IT" department.
+
+var query7 = employees.Where( e =>e.Department == "IT" ).Select(e => e);
+foreach( var e in query7)
+        {
+            System.Console.WriteLine($" Name: {e.Name} ; Department: {e.Department}");
+        }
+// 8. Get all employees older than 30 and earning more than 40000.
+
+var query8 = employees.Where(e => e.Age > 30 && e.Salary> 40000).Select( e => e);
+foreach( var q in query8)
+        {
+            System.Console.WriteLine($"Name: {q.Name} ; Age: {q.Age} ; Salary: {q.Salary} ");
+        }
+// 9. Use OfType<int> on a mixed object[] array 
+// containing ints, strings, and doubles — return only the ints.
+
+object[] mixedArray = new object[]{"Aryan", 8.9, "Amrita", 66, 34.89, "Stewart", 22};
+System.Console.WriteLine("The integer items in the mixed array: ");
+var query9 = mixedArray.OfType<int>();
+foreach( var q in query9)
+        {
+            System.Console.Write(q+ " ");
+        }
+
+// PROJECTION 
+
+// 10. Select just the names of all products priced above 1000.
+System.Console.WriteLine("\nProducts with price > 1000");
+List<string> query10 = products.Where(p => p.Price > 1000).Select( p => p.Name).ToList();
+foreach(string q in query10)
+        {
+            System.Console.Write(q + " ");
+        }
+
+// 11. Use SelectMany to flatten a List<List<int>> of { {1,2,3}, {4,5}, {6} } 
+// into a single flat sequence.
+
+System.Console.WriteLine("\nThe flattened list is : ");
+List<List<int>> listOfIntegers = new List<List<int>>()
+{
+    new List<int>{1,2,3}, // we can omit the default () here - we need it when 
+    new List<int>{4,5},  // we need to allocate memory specifically or 
+    new List<int>{6}   // copy an existing list 
+};
+List<int> query11 = listOfIntegers.SelectMany( s => s).ToList();
+foreach( int w in query11)
+        {
+            System.Console.Write(w+" ");
+        }
+// 12. Use SelectMany on employees grouped by department to list all employee 
+//  names across every department as one flat list (after grouping first).
+System.Console.WriteLine("\nnames of all employees across all departments: ");
+
+var groupedByDept = employees.GroupBy( e => e.Department).SelectMany(g => g).Select( e =>e.Name);
+foreach( var q in groupedByDept)
+        {
+            System.Console.Write(q + " ");
+        }
+// ORDERING 
+// 13. Sort products by Price ascending.
+System.Console.WriteLine();
+var query13 = products.OrderBy(p => p.Price).Select(p => p);
+foreach( var p in query13)
+        {
+            System.Console.WriteLine($"{p.Name} is of price Rs.{p.Price}");
+        }
+
+
+// 14. Sort employees by Department ascending, then by Salary descending within each department.
+
+var query14 = employees.OrderBy( e => e.Department).ThenByDescending( e => e.Salary).Select(e => e);
+foreach( var e in query14)
+        {
+            System.Console.WriteLine($"{e.Name} is in {e.Department} and has salary of {e.Salary}");
+        }
+// 15. Reverse the order of the words array.
+
+var query15 = words.Select( e => e).Reverse();
+foreach(var item in query15)
+        {
+            System.Console.Write(item+" ");
+        }
+// 16. Group employees by Department and print each department with its employee count.
+// grouping example with result selector
+System.Console.WriteLine();
+var query16 = employees.GroupBy(
+    e => e.Department,
+    (a,b)=> new{Department = a, Total = b.Count() });
+foreach(var item in query16)
+        {
+                System.Console.WriteLine(item);
+        }
+// 17. Group employees by both Department and Location (multi-key grouping).
+
+var query17 = employees.GroupBy( e => new{e.Department,e.Location}).Select(e => e);
+foreach( var item in query17)
+        {
+          System.Console.Write(item.Key+": ");
+          foreach( var q in item)
+            {
+                System.Console.Write(q.Name);
+            }
+            System.Console.WriteLine();
+        }
+// 18. Group employees by Department using a result selector to
+//  directly produce { Department, AverageSalary }.
+
+var query18 = employees.GroupBy(
+    e => e.Department,
+    (key, group) => new{Department = key, AverageSalary= group.Average(e => e.Salary)}
+);
+foreach( var q in query18)
+        {
+            System.Console.WriteLine(q);
+        }
+// 19. Group employees by Department,
+//  selecting only employee Name into each group (custom element selector).
+
+var query19 = employees.GroupBy(
+    e => e.Department,
+    e => e.Name // custom selector
+);
+foreach(var q in query19)
+        {
+            System.Console.Write(q.Key+": ");
+
+            foreach(var i in q)
+            {
+             System.Console.Write(i + " ");   
+            }
+            System.Console.WriteLine();
+        }
+// 20. Create a nested grouping: group by Department,
+//  then within each department group, sub-group by Location.
+
+var query20 = employees.GroupBy(
+    e => e.Department
+).Select(g => new{Department = g.Key, SubGroups= g.GroupBy(e => e.Location) });
+  foreach( var item in query20)
+        {
+            System.Console.Write(item.Department+"\n");
+            foreach(var q in item.SubGroups)
+            {
+                System.Console.Write(q.Key+": ");
+                foreach(var s in q)
+                {
+                    System.Console.WriteLine(s.Name);
+                }
+            }
+        
+        }
+// JOINS
+// 21. Write an inner join between orders and customers to show customer name + product ordered.
+var query21 =  from c in customers
+               join o in orders
+               on c.Id equals o.CustomerId
+               select new {c.Name, o.Product};
+
+    foreach(var q in query21)
+        {
+            System.Console.WriteLine(q);
+        }
+// 22. Write a left outer join between customers and orders so that 
+// customers with no orders still appear (with "No Orders" shown).
+
 
 
     }
+
 }
+

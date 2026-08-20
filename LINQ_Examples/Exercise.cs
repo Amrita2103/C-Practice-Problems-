@@ -239,9 +239,9 @@ foreach( var q in groupedByDept)
 // 13. Sort products by Price ascending.
 System.Console.WriteLine();
 var query13 = products.OrderBy(p => p.Price).Select(p => p);
-foreach( var p in query13)
+foreach( var z in query13)
         {
-            System.Console.WriteLine($"{p.Name} is of price Rs.{p.Price}");
+            System.Console.WriteLine($"{z.Name} is of price Rs.{z.Price}");
         }
 
 
@@ -422,15 +422,78 @@ foreach(var e in Except)
 // 27. Remove duplicate Category values from products using Distinct.
 System.Console.WriteLine("\nThe distinct products are: ");
 var query27 = products.Distinct();
-foreach(var p in query27)
+foreach(var s in query27)
         {
-            System.Console.WriteLine(p.Name);
+            System.Console.WriteLine(s.Name);
         }
 // Element Operators 
 // 28. Find the first employee named "Isha" using FirstOrDefault — 
 // and show what happens if you search for a name that doesn't exist.
+var m = employees.FirstOrDefault(e=>e.Name == "Isha");
+System.Console.WriteLine($"The employee {m?.Name} exists and is of age {m?.Age} in department {m?.Department} and earns {m?.Salary}");
 
+//FirstOrDefault gives us the first element it finds and ignores the rest - never crashes
+var n = employees.FirstOrDefault(e => e.Name == "Pritam");
+System.Console.WriteLine($"The employee Pritam {(n!=null ? "exists": "does not exist")}");
 
+// 29. Use SingleOrDefault to find the one employee with Id == 3. 
+// Then try it with a filter that matches multiple employees and observe the exception.
+
+//SingleOrDefault ensures there is only one match in the entire collection -
+// if it finds a duplicate - it throws an error to warn us 
+var p = employees.SingleOrDefault( e => e.Id == 3);
+System.Console.WriteLine($"Found: {p?.Name}");
+
+/*var query29 = employees.SingleOrDefault(e => e.Id >0);
+System.Console.WriteLine($"Found: {query29?.Name}");*/
+
+//30. Get the employee at index 2 using ElementAt,
+//  then try ElementAtOrDefault(50) (out of range) and observe the safe result.
+
+var query30 = employees.ElementAt(2);
+var query30_1= employees.ElementAtOrDefault(50);
+
+System.Console.WriteLine($"Found: {query30.Name}");
+ //System.Console.WriteLine($"{query30_1.Name}");
+
+// Quantifiers - Any, All, Contains
+//31. Check if any employee earns more than 70000.
+ bool query31 = employees.Any(e => e.Salary > 70000);
+System.Console.WriteLine($"{(query31 == false? "does not exist": "people earning > 70000 exist")}");
+
+//32. Check if all employees are older than 20.
+bool query32 = employees.All(e => e.Age > 20);
+System.Console.WriteLine($"{(query32 == true? "All employees are older than 20" : "All employees are not older than 20")}");
+
+// 33. Check if products contains an item priced exactly 500.
+//contains expect an object value, not a lambda collection 
+bool res = products.Any(p => p.Price == 500);
+System.Console.WriteLine($"The product {(res == true? "exists" : "does not exist")}");
+
+// AGGREGATION 
+// 34. count how many employees work in sales ?
+
+int total = employees.Count(e => e.Department=="Sales");
+System.Console.WriteLine($" no. of people working in sales : {total}");
+//35. Calculate total stock value of all products (Price * Stock summed).
+decimal total_sum = products.Sum(p => p.Price*p.Stock);
+System.Console.WriteLine($"The sum is: {total_sum}");
+
+// 36. Find the average salary of IT department employees.
+var avgSalary = employees.Where( e => e.Department=="IT").Select(e => e).Average(e => e.Salary);
+System.Console.WriteLine($"Average salary is: {avgSalary}");
+
+// 37. Find the youngest and oldest employee ages using Min/Max.
+
+var youngest_age = employees.Min(e =>e.Age);
+var oldest_employee = employees.Max(e => e.Age);
+System.Console.WriteLine($"Youngest employee age: {youngest_age}");
+System.Console.WriteLine($"Oldest employee age: {oldest_employee}");
+
+// 38. Use Aggregate to concatenate all product names into a single comma-separated string.
+
+var newString = products.Select(e =>e.Name).Aggregate((current,next)=> current +""+next );
+System.Console.WriteLine(newString);
     }
 }
 
